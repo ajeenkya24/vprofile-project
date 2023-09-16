@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+#vprodb is container name of DB container
+  vprodb:
+    build:
+       context: ./Docker-files/db/
+       # in context we have given path of docker file made for db
+    image: ajeenkya1/vprofiledb
+    container_name: vprodb
+    ports:
+      - "3306:3306"
+    volumes: 
+     - vprodbdata:/var/lib/mysql
+     #this folder of the container will be mounted on this volume. Container p yaha dbdata store hoga
+    environment: 
+     - MYSQL_ROOT_PASSWORD=vprodbpass 
+  
+#name vprocache01 based on application prop file and image memcached is official image of memcached
+  vprocache01:
+    image: memcached
+    ports: 
+      - "11211:11211"
+
+#name vpromq01 based on application prop file and image memcached is official image of rabbitmq
+  vpromq01:
+    image: rabbitmq
+    ports: 
+      - "15672:15672" 
+
+
+  vproapp:
+    build:
+       context: ./Docker-files/app/
+       # in context we have given path of docker file made for db
+    image: ajeenkya1/vprofileapp
+    container_name: vproapp
+    ports:
+      - "8080:8080"
+    volumes: 
+     - vproappdata:/usr/local/tomcat/webapps
+
+
+  vproweb:
+    build:
+       context: ./Docker-files/web/
+       # in context we have given path of docker file made for db
+    image: ajeenkya1/vprofileweb
+    container_name: vproweb
+    ports:
+      - "80:80"   
+volumes: 
+  vprodbdata: {}
+  vproappdata: {}
+
